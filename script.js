@@ -2,9 +2,26 @@ const qs = (selector) => document.querySelector(selector);
 const question = qs(".question");
 const gif = qs(".gif");
 const [yesBtn, noBtn] = [".yes-btn", ".no-btn"].map(qs);
+const dateOptions = qs(".date-options");
+const copyStatus = qs(".copy-status");
+const instagramBtn = qs(".instagram-btn");
+const dateOptionBtns = document.querySelectorAll(".date-option-btn");
+
+const copyToClipboard = async (text) => {
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch (error) {
+    const tempInput = document.createElement("input");
+    tempInput.value = text;
+    document.body.appendChild(tempInput);
+    tempInput.select();
+    document.execCommand("copy");
+    tempInput.remove();
+  }
+};
 
 const handleYesClick = () => {
-  question.innerHTML = "Yeahhhhhhhhhhh! See you tomorrow!!";
+  question.innerHTML = "Done. We are going out on Eid.";
   gif.src = "https://media.giphy.com/media/UMon0fuimoAN9ueUNP/giphy.gif";
 
   // Remove the 'mouseover' event listener from noBtn
@@ -135,17 +152,26 @@ const handleYesClick = () => {
   letsGoBtn.style.transform = "translate(-50%, -50%)";
   letsGoBtn.style.width = "200px"; // Adjust the width as needed
 
-  // Add a click event listener to prompt the user with random romantic date ideas
+  // Add a click event listener to show date options
   letsGoBtn.addEventListener("click", () => {
-    const randomIndex = Math.floor(Math.random() * dateIdeas.length);
-    const selectedDateIdea = dateIdeas[randomIndex];
-
-    alert(`How about this romantic date idea: ${selectedDateIdea}`);
+    question.innerHTML = "Choose one date plan";
+    letsGoBtn.remove();
+    dateOptions.classList.remove("hidden");
   });
 
   // Replace yesBtn with the new letsGoBtn
   yesBtn.replaceWith(letsGoBtn);
 };
+
+dateOptionBtns.forEach((button) => {
+  button.addEventListener("click", async () => {
+    const selectedOption = button.dataset.option;
+    await copyToClipboard(selectedOption);
+    copyStatus.textContent = `${selectedOption} copied to clipboard.`;
+    copyStatus.classList.remove("hidden");
+    instagramBtn.classList.remove("hidden");
+  });
+});
 
 const handleNoMouseOver = () => {
   const { width, height } = noBtn.getBoundingClientRect();
